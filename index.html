@@ -1,0 +1,671 @@
+<!-- Покровский Артём Всеволодович ИСП-323р -->
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новогодний Автоквест</title>
+    <style>
+        :root {
+            --red: #dc2626;
+            --green: #16a34a;
+            --gold: #fbbf24;
+            --blue: #2563eb;
+            --dark: #0f172a;
+            --snow: #f8fafc;
+            --silver: #cbd5e1;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--snow);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(220, 38, 38, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(22, 163, 74, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+        .screen {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+        .screen.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        .snowflake {
+            position: fixed;
+            color: white;
+            font-size: 20px;
+            opacity: 0.8;
+            z-index: -1;
+            animation: snowFall linear infinite;
+        }
+        
+        @keyframes snowFall {
+            0% { transform: translateY(-100px) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 48px;
+            background: linear-gradient(45deg, var(--red), var(--gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(220, 38, 38, 0.3);
+        }
+        .header p {
+            color: var(--silver);
+            font-size: 18px;
+        }
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 2px solid rgba(251, 191, 36, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        .input-group {
+            margin: 20px 0;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid var(--gold);
+            border-radius: 10px;
+            color: var(--snow);
+            font-size: 18px;
+            text-align: center;
+        }
+        .difficulty-btns {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .diff-btn {
+            flex: 1;
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid var(--silver);
+            border-radius: 10px;
+            color: var(--silver);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .diff-btn.active {
+            background: var(--red);
+            border-color: var(--red);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
+        }
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .stat-item {
+            flex: 1;
+            padding: 15px;
+        }
+        .stat-value {
+            display: block;
+            font-size: 24px;
+            color: var(--gold);
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: var(--silver);
+        }
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, var(--red), var(--gold));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+            margin: 20px 0;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .player-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, var(--red), var(--gold));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .game-stats {
+            display: flex;
+            gap: 15px;
+        }
+        .stat-box {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--silver);
+            min-width: 120px;
+        }
+        .progress-container {
+            margin: 20px 0;
+        }
+        .progress-bar {
+            height: 8px;
+            background: var(--silver);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--red), var(--gold));
+            border-radius: 4px;
+            width: 10%;
+            transition: width 0.5s;
+        }
+        .question-box {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border: 2px solid var(--gold);
+        }
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .question-number {
+            background: var(--red);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .question-text {
+            font-size: 22px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .options {
+            display: grid;
+            gap: 10px;
+        }
+        .option {
+            padding: 15px;
+            background: rgba(30, 41, 59, 0.9);
+            border: 2px solid var(--silver);
+            border-radius: 10px;
+            color: var(--snow);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option:hover:not(.selected):not(.correct):not(.wrong) {
+            border-color: var(--blue);
+            transform: translateX(5px);
+        }
+        .option.selected {
+            border-color: var(--blue);
+            background: rgba(37, 99, 235, 0.2);
+        }
+        .option.correct {
+            border-color: var(--green);
+            background: var(--green);
+            color: white;
+        }
+        .option.wrong {
+            border-color: var(--red);
+            background: var(--red);
+            color: white;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .controls button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .hint-btn {
+            background: rgba(251, 191, 36, 0.2);
+            color: var(--gold);
+            border: 2px solid var(--gold);
+        }
+        .next-btn {
+            background: linear-gradient(45deg, var(--red), var(--gold));
+            color: white;
+        }
+        .next-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .result-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .trophy {
+            font-size: 60px;
+            color: var(--gold);
+            margin-bottom: 15px;
+            animation: bounce 1s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .score-display {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(45deg, var(--red), var(--gold));
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+        }
+        .score-value {
+            font-size: 40px;
+            font-weight: bold;
+            color: white;
+        }
+        .result-stats {
+            display: grid;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .result-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 10px;
+        }
+        .achievements {
+            margin: 20px 0;
+        }
+        .achievement {
+            display: inline-block;
+            background: rgba(251, 191, 36, 0.2);
+            border: 1px solid var(--gold);
+            border-radius: 20px;
+            padding: 8px 16px;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .result-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .result-buttons button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .play-btn {
+            background: linear-gradient(45deg, var(--red), var(--gold));
+            color: white;
+        }
+        .menu-btn {
+            background: rgba(30, 41, 59, 0.8);
+            color: var(--snow);
+            border: 2px solid var(--silver);
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(30, 41, 59, 0.95);
+            border-left: 4px solid var(--gold);
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 300px;
+            transform: translateX(400px);
+            animation: slideIn 0.3s forwards;
+            z-index: 1000;
+        }
+        @keyframes slideIn {
+            to { transform: translateX(0); }
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            .header h1 {
+                font-size: 36px;
+            }
+            .question-text {
+                font-size: 18px;
+            }
+            .game-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .difficulty-btns {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="snowContainer"></div>
+    <div id="menuScreen" class="screen active">
+        <div class="container">
+            <div class="header">
+                <h1>🎄 Новогодний Автоквест 🎁</h1>
+                <p>Проверь свои знания об автомобилях в праздничной атмосфере!</p>
+            </div>
+            <div class="card">
+                <div class="input-group">
+                    <input type="text" id="playerName" placeholder="Твоё имя" value="Снеговик">
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-value">10</span>
+                        <span class="stat-label">вопросов</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">3</span>
+                        <span class="stat-label">подсказки</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">∞</span>
+                        <span class="stat-label">время</span>
+                    </div>
+                </div>
+                <button id="startBtn" class="btn">🎮 НАЧАТЬ ИГРУ</button>
+            </div>
+        </div>
+    </div>
+    <div id="gameScreen" class="screen">
+        <div class="container">
+            <div class="game-header">
+                <div class="player-info">
+                    <div class="player-avatar">🎅</div>
+                    <div id="playerDisplay">Снеговик</div>
+                </div>
+                <div class="game-stats">
+                    <div class="stat-box">⭐ <span id="scoreDisplay">0</span> очков</div>
+                    <div class="stat-box">✅ <span id="correctDisplay">0</span>/10</div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div style="text-align: right; margin-bottom: 5px;"><span id="progressCounter">1/10</span></div>
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            </div>
+            <div class="question-box">
+                <div class="question-header">
+                    <div class="question-number" id="questionNumber">Вопрос 1</div>
+                </div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+            <div class="controls">
+                <button id="hintBtn" class="hint-btn">💡 Подсказка (-5)</button>
+                <button id="nextBtn" class="next-btn" disabled>Далее 🎄</button>
+            </div>
+            <button id="quitBtn" style="width: 100%; padding: 12px; background: transparent; border: 1px solid var(--red); color: var(--red); border-radius: 10px; cursor: pointer;">
+                🏠 В меню
+            </button>
+        </div>
+    </div>
+    <div id="resultScreen" class="screen">
+        <div class="container">
+            <div class="result-header">
+                <div class="trophy">🏆</div>
+                <h2>Поздравляем! 🎉</h2>
+                <p id="resultPlayer">Снеговик</p>
+            </div>
+            <div class="score-display">
+                <div class="score-circle">
+                    <div class="score-value" id="finalScore">0</div>
+                    <div>очков</div>
+                </div>
+            </div>
+            <div class="result-stats">
+                <div class="result-stat"><span>Правильные ответы:</span><span id="finalCorrect">0/10</span></div>
+                <div class="result-stat"><span>Использовано подсказок:</span><span id="finalHints">0</span></div>
+            </div>
+            <div class="achievements">
+                <h3>🎁 Достижения:</h3>
+                <div id="achievementsGrid"></div>
+            </div>
+            <div class="result-buttons">
+                <button id="restartBtn" class="play-btn">🎮 Играть снова</button>
+                <button id="menuBtn" class="menu-btn">🏠 В меню</button>
+            </div>
+        </div>
+    </div>
+    <div id="notificationContainer"></div>
+    <script>
+        const game = {
+            playerName: "Снеговик",
+            score: 0,
+            currentQuestion: 0,
+            correctAnswers: 0,
+            usedHints: 0,
+            selectedAnswer: null,
+            questions: [
+                { text: "Какой автомобиль чаще всего украшают к Новому году?", options: ["Mercedes S-класс", "ВАЗ-2109", "Ford Focus", "Toyota Camry"], correct: 1, hint: "Легендарная 'девятка' - фаворит для праздничных украшений" },
+                { text: "Какой цвет автомобиля считается самым праздничным?", options: ["Белый", "Красный", "Золотой", "Зеленый"], correct: 1, hint: "Цвет Деда Мороза и новогодних шаров" },
+                { text: "Какой подарок мечтает найти под ёлкой каждый автолюбитель?", options: ["Новые диски", "Карточку на мойку", "Автосигнализацию", "Коврики"], correct: 0, hint: "Это самое желанное украшение для автомобиля" },
+                { text: "Как называется машина Деда Мороза?", options: ["Северные сани", "Метелица", "Снеголет", "Вьюговоз"], correct: 0, hint: "Традиционное средство передвижения зимнего волшебника" },
+                { text: "Какой автомобиль лучше всего подходит для поездки за ёлкой?", options: ["Хэтчбек", "Седан", "Универсал", "Купе"], correct: 2, hint: "Нужен большой багажник для лесной красавицы" },
+                { text: "Что чаще всего вешают на зеркало в новогоднюю ночь?", options: ["Брелок", "Иконку", "Ароматизатор", "Игрушку"], correct: 3, hint: "Маленькое праздничное украшение" },
+                { text: "Какой звуковой сигнал уместен в новогоднюю ночь?", options: ["Гудок", "Мелодия", "Сигнал тревоги", "Громкий клаксон"], correct: 1, hint: "Музыкальное поздравление" },
+                { text: "Что должно быть в машине для новогодней поездки?", options: ["Теплый плед", "Запасной аккумулятор", "Лопата", "Все варианты"], correct: 3, hint: "Зима требует полной готовности" },
+                { text: "Как украшают машину в канун Нового года?", options: ["Гирляндами", "Рисунками", "Наклейками", "Всем сразу"], correct: 3, hint: "Чем ярче - тем праздничнее" },
+                { text: "Что пьют автолюбители в новогоднюю ночь?", options: ["Шампанское", "Сок", "Чай", "Газировку"], correct: 2, hint: "Только безалкогольные напитки за рулем" }
+            ],
+            init() {
+                this.createSnowflakes();
+                document.getElementById('startBtn').addEventListener('click', () => this.startGame());
+                document.getElementById('nextBtn').addEventListener('click', () => this.nextQuestion());
+                document.getElementById('hintBtn').addEventListener('click', () => this.showHint());
+                document.getElementById('quitBtn').addEventListener('click', () => this.quitToMenu());
+                document.getElementById('restartBtn').addEventListener('click', () => this.restartGame());
+                document.getElementById('menuBtn').addEventListener('click', () => this.quitToMenu());
+                document.getElementById('playerName').addEventListener('input', (e) => {
+                    this.playerName = e.target.value || "Снеговик";
+                });
+            },
+            createSnowflakes() {
+                const container = document.getElementById('snowContainer');
+                for (let i = 0; i < 50; i++) {
+                    const flake = document.createElement('div');
+                    flake.className = 'snowflake';
+                    flake.innerHTML = '❄';
+                    flake.style.left = Math.random() * 100 + 'vw';
+                    flake.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                    flake.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                    flake.style.animationDelay = Math.random() * 5 + 's';
+                    flake.style.opacity = Math.random() * 0.5 + 0.3;
+                    container.appendChild(flake);
+                }
+            },
+            startGame() {
+                this.playerName = document.getElementById('playerName').value || "Снеговик";
+                this.score = this.currentQuestion = this.correctAnswers = this.usedHints = 0;
+                document.getElementById('menuScreen').classList.remove('active');
+                document.getElementById('gameScreen').classList.add('active');
+                document.getElementById('playerDisplay').textContent = this.playerName;
+                this.loadQuestion();
+            },
+            loadQuestion() {
+                if (this.currentQuestion >= this.questions.length) {
+                    this.showResults();
+                    return;
+                }
+                const q = this.questions[this.currentQuestion];
+                this.selectedAnswer = null;
+                document.getElementById('questionNumber').textContent = `Вопрос ${this.currentQuestion + 1}`;
+                document.getElementById('questionText').textContent = q.text;
+                document.getElementById('progressCounter').textContent = `${this.currentQuestion + 1}/10`;
+                document.getElementById('scoreDisplay').textContent = this.score;
+                document.getElementById('correctDisplay').textContent = this.correctAnswers;
+                const progress = ((this.currentQuestion) / this.questions.length) * 100;
+                document.getElementById('progressFill').style.width = `${progress}%`;
+                const optionsContainer = document.getElementById('optionsContainer');
+                optionsContainer.innerHTML = '';
+                const letters = ['🎅', '🎄', '🎁', '⭐'];
+                q.options.forEach((option, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option';
+                    btn.innerHTML = `${letters[index]} ${option}`;
+                    btn.addEventListener('click', () => this.selectAnswer(index));
+                    optionsContainer.appendChild(btn);
+                });
+                document.getElementById('nextBtn').disabled = true;
+                document.getElementById('hintBtn').disabled = false;
+            },
+            selectAnswer(index) {
+                if (this.selectedAnswer !== null) return;
+                this.selectedAnswer = index;
+                const q = this.questions[this.currentQuestion];
+                const options = document.querySelectorAll('.option');
+                options[index].classList.add('selected');
+                if (index === q.correct) {
+                    options[index].classList.add('correct');
+                    this.score += 10;
+                    this.correctAnswers++;
+                    this.showNotification("🎉 Правильно!", "+10 очков!");
+                } else {
+                    options[index].classList.add('wrong');
+                    options[q.correct].classList.add('correct');
+                    this.showNotification("❌ Неправильно", "Следующий вопрос будет лучше!");
+                }
+                document.getElementById('nextBtn').disabled = false;
+                document.getElementById('scoreDisplay').textContent = this.score;
+                document.getElementById('correctDisplay').textContent = this.correctAnswers;
+            },
+            showHint() {
+                if (this.usedHints >= 3) {
+                    this.showNotification("⚠️ Внимание", "Подсказки закончились!");
+                    return;
+                }
+                const hint = this.questions[this.currentQuestion].hint;
+                this.showNotification("💡 Подсказка", hint);
+                this.usedHints++;
+                this.score = Math.max(0, this.score - 5);
+                document.getElementById('scoreDisplay').textContent = this.score;
+            },
+            nextQuestion() {
+                this.currentQuestion++;
+                this.loadQuestion();
+            },
+            showResults() {
+                document.getElementById('gameScreen').classList.remove('active');
+                document.getElementById('resultScreen').classList.add('active');
+                document.getElementById('resultPlayer').textContent = this.playerName;
+                document.getElementById('finalScore').textContent = this.score;
+                document.getElementById('finalCorrect').textContent = `${this.correctAnswers}/10`;
+                document.getElementById('finalHints').textContent = this.usedHints;
+                this.showAchievements();
+                this.showNotification("🏆 Поздравляем!", "Вы завершили новогодний автоквест!");
+            },
+            showAchievements() {
+                const grid = document.getElementById('achievementsGrid');
+                grid.innerHTML = '';
+                if (this.correctAnswers === 10) grid.innerHTML += '<div class="achievement">🎯 Идеальный результат</div>';
+                if (this.score >= 150) grid.innerHTML += '<div class="achievement">⭐ Высший балл</div>';
+                if (this.usedHints === 0) grid.innerHTML += '<div class="achievement">🧠 Без подсказок</div>';
+                if (this.correctAnswers >= 7) grid.innerHTML += '<div class="achievement">🏅 Отличный результат</div>';
+                if (grid.innerHTML === '') grid.innerHTML = '<div class="achievement">🎄 Хорошая попытка!</div>';
+            },
+            restartGame() {
+                document.getElementById('resultScreen').classList.remove('active');
+                this.startGame();
+            },
+            quitToMenu() {
+                document.getElementById('gameScreen').classList.remove('active');
+                document.getElementById('resultScreen').classList.remove('active');
+                document.getElementById('menuScreen').classList.add('active');
+            },
+            showNotification(title, text) {
+                const container = document.getElementById('notificationContainer');
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+                notification.innerHTML = `<strong>${title}</strong><div>${text}</div>`;
+                container.appendChild(notification);
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+        };
+        document.addEventListener('DOMContentLoaded', () => game.init());
+    </script>
+</body>
+</html>
